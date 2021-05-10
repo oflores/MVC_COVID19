@@ -76,14 +76,14 @@ namespace saonGroup.UI.Models
             return result;
         }
 
-            #region RAPID_API
-            /// <summary>
-            /// get data from RAPID_API, endpoint reports
-            /// </summary>
-            /// <param name="date">The date of report in the format Y-m-d | empty default current date</param>
-            /// <param name="ISO">Country ISO code</param>
-            /// <returns></returns>
-            private async Task<string> getDataAsync(string date, string ISO) {
+        #region RAPID_API
+        /// <summary>
+        /// get data from RAPID_API, endpoint reports
+        /// </summary>
+        /// <param name="date">The date of report in the format Y-m-d | empty default current date</param>
+        /// <param name="ISO">Country ISO code</param>
+        /// <returns></returns>
+        private async Task<string> getDataAsync(string date, string ISO) {
             string result = string.Empty;
             string urlBase = "https://covid-19-statistics.p.rapidapi.com/reports";
             urlBase += string.IsNullOrEmpty(date) ? "" : "?date="+date;
