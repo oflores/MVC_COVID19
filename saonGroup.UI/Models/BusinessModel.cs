@@ -23,8 +23,8 @@ namespace saonGroup.UI.Models
         public List<RegionModel> DataRegion(int top=10,string date = "",string ISO ="")
         {
             List<RegionModel> result = new List<RegionModel>(); 
-            var task2 = Task.Run(async () => await this.getDataAsync(date, ISO));
-            string body = task2.Result;
+            var taskGetData = Task.Run(async () => await this.getDataAsync(date, ISO));
+            string body = taskGetData.Result;
                 JObject allData = JObject.Parse(body); 
                 JArray allRegions = (JArray)allData["data"];
                 result = allRegions.Select(p => new  
@@ -49,14 +49,36 @@ namespace saonGroup.UI.Models
             return result;
         }
 
-        #region RAPID_API
-        /// <summary>
-        /// get data from RAPID_API, endpoint reports
-        /// </summary>
-        /// <param name="date">The date of report in the format Y-m-d | empty default current date</param>
-        /// <param name="ISO">Country ISO code</param>
-        /// <returns></returns>
-        private async Task<string> getDataAsync(string date, string ISO) {
+        public List<ProvinceModel> DataProvince(string ISO,int top = 10, string date = "")
+        {
+            List<ProvinceModel> result = new List<ProvinceModel>();
+            var taskGetData = Task.Run(async () => await this.getDataAsync(date, ISO));
+            string body = taskGetData.Result;
+            JObject allData = JObject.Parse(body);
+            JArray province = (JArray)allData["data"];
+            result = province.Select(p => new ProvinceModel
+                                {
+                                    confirmed = (int)p["confirmed"],
+                                    deaths = (int)p["deaths"],
+                                    iso = (string)p["region"]["iso"],
+                                    name = (string)p["region"]["name"],
+                                    recovered = (int)p["recovered"],
+                                    province=(string)p["region"]["province"]
+                                }) 
+                                .OrderByDescending(o => o.confirmed)
+                                .Take(top)
+                                .ToList();
+            return result;
+        }
+
+            #region RAPID_API
+            /// <summary>
+            /// get data from RAPID_API, endpoint reports
+            /// </summary>
+            /// <param name="date">The date of report in the format Y-m-d | empty default current date</param>
+            /// <param name="ISO">Country ISO code</param>
+            /// <returns></returns>
+            private async Task<string> getDataAsync(string date, string ISO) {
             string result = string.Empty;
             string urlBase = "https://covid-19-statistics.p.rapidapi.com/reports";
             urlBase += string.IsNullOrEmpty(date) ? "" : "?date="+date;

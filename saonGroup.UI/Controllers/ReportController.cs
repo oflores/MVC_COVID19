@@ -15,9 +15,16 @@ namespace saonGroup.UI.Controllers
         {
             BusinessModel bs = new BusinessModel();
             List<RegionModel> regions = bs.DataRegion();
-            var regionDrop = new SelectList(regions.Select( r => new { r.name,r.iso }));
-            
+            var regionDrop = new SelectList(regions.Select( r => new { r.name,r.iso }),"iso","name",string.Empty);
+            ViewBag.regionDrop = regionDrop;
             return View(regions);
-        } 
+        }
+
+
+        public IActionResult Province(string ISO) {
+            BusinessModel bs = new BusinessModel();
+            List<ProvinceModel> regions = bs.DataProvince(ISO);
+            return  PartialView(regions);
+        }
     }
 }

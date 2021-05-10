@@ -4,36 +4,155 @@
     ViewData["Title"] = "Top 10 Covid Cases";
 }
 
-<h5>Top 10 covid cases</h5>
+@*<h5>Top 10 covid cases</h5>*@
 
- 
-<table class="table">
+<div class="row">
+    <div class="mx-2">
+        <div class="btn-group">
+            @*<button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Regions
+                </button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="#">Regions</a>
+                    <a class="dropdown-item" href="#">USA</a>
+                    <a class="dropdown-item" href="#">CHINA</a>
+                </div>*@
+            @Html.DropDownList("btnIso",
+                    ViewBag.regionDrop as SelectList,
+                   "-- Regions --",
+                   new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="mx-2">
+        <button type="button" class="btn btn-secondary" id="btnReport">
+            Report
+        </button>
+    </div>
+    <div class="mx-2">
+    </div>
+    <div class="mx-6 float-right">
+        <div class="btn-group float-right" role="group" aria-label="Basic example">
+            <button type="button" class="btn btn-outline-secondary" id="btnXML">XML</button>
+            <button type="button" class="btn btn-outline-secondary" id="btnJson">JSON</button>
+            <button type="button" class="btn btn-outline-secondary" id="btnCsv">CSV</button>
+        </div>
+    </div>
+</div>
+
+<br />
+<br />
+<table class="table  table-borderless" id="tableRegion">
     <thead>
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.name)
-            </th> 
+            </th>
             <th>
                 @Html.DisplayNameFor(model => model.confirmed)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.recovered)
-            </th> 
+                @Html.DisplayNameFor(model => model.deaths)
+            </th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.name)
-            </td> 
-            <td>
-                @Html.DisplayFor(modelItem => item.confirmed)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.recovered)
-            </td> 
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.confirmed)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.deaths)
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+<div id="detailsProv">
+
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        var currentISO = "";
+        var urlBase = '@Url.Action("Province", "Report")?ISO=' ;
+        $(document).ready(function () {
+            $("#btnReport").click(function () {
+                currentISO = $("#btnIso").val();
+                loadDataTable();
+            });
+            $("#btnXML").click(function () {
+                alert('printXML');
+                printXml();
+            });
+        });
+        function loadDataTable() {
+            if (currentISO !== "") {
+                $.get(urlBase + currentISO, function (data) {
+                    $('#detailsProv').html(data);
+                    $('#detailsProv').show();
+                    $('#tableRegion').hide();
+                });
+
+            } else {
+                $('#detailsProv').hide();
+                $('#tableRegion').show();
+            }
+        }
+        function printXml() {
+            console.log('aqui');
+            if (currentISO == "") {
+                regionsXML();
+            } else {
+                provinceXmL();
+            }
+
+        }
+        function regionsXML() {
+            var xml = '<?xml version="1.0" encoding="UTF-8"?>';
+            xml = '<Regions>';
+            var tritem = document.getElementById("tableRegion").getElementsByTagName("tr"); 
+            xml += xmlBody("REGION", tritem);
+            xml += '</Regions>';
+            downloadXML("regions.xml", xml, "xml");
+        }
+        function provinceXmL() {
+            var xml = '<?xml version="1.0" encoding="UTF-8"?>';
+            xml = '<provinces ISO="' + currentISO +'">';
+            var tritem = document.getElementById("tableProvince").getElementsByTagName("tr"); 
+            xml += xmlBody("PROVINCE", tritem);
+            xml += '</provinces>';
+            downloadXML("provinces.xml", xml,"xml");
+        }
+        function xmlBody(elementTag, currentTable) {
+            var xml = "";
+            for (i = 1; i < currentTable.length; i++) {
+                var celldata = currentTable[i];
+                if (celldata.cells.length > 0) {
+                    xml += "<" + elementTag+" name='" + celldata.cells[0].textContent + "'>\n";
+                    xml += "<CASES>" + celldata.cells[1].textContent + "</CASES>\n";
+                    xml += "<DEATH>" + celldata.cells[2].textContent + "</DEATH>\n";
+                    xml += "</"+elementTag+">\n";
+                }
+            }
+            return xml;
+        }
+        function downloadXML(filename, text,type) {
+            var element = document.createElement('a');
+            element.setAttribute('href', 'data:text/'+type+';charset=utf-8,' + encodeURIComponent(text));
+            element.setAttribute('download', filename); 
+            element.style.display = 'none';
+            document.body.appendChild(element); 
+            element.click(); 
+            document.body.removeChild(element);
+        }
+    </script>
+
+
+    @*<script src="~/js/ReportController.js"></script>*@
+}
