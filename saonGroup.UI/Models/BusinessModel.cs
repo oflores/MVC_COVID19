@@ -3,13 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 
 namespace saonGroup.UI.Models
 {
     public class BusinessModel
     {
+        private string apiKey = "";
+        private string apiHost = "";
+        public BusinessModel(string _apiHost, string _apiKey) {
+            this.apiHost = _apiHost;
+            this.apiKey = _apiKey;
+        }
         public List<RegionModel> DummyDataRegion()
         {
             List<RegionModel> result = new List<RegionModel>();
@@ -93,8 +98,8 @@ namespace saonGroup.UI.Models
                 RequestUri = new Uri(urlBase),
                 Headers =
                     {
-                        { "x-rapidapi-key",  "82f2a0f1a9msh8004332f2de37cbp16eed0jsna717a9f05f40"},
-                        { "x-rapidapi-host",  "covid-19-statistics.p.rapidapi.com" },
+                        { "x-rapidapi-key",  this.apiKey},
+                        { "x-rapidapi-host", this.apiHost},
                     },
             };
             using (var response = await client.SendAsync(request))
