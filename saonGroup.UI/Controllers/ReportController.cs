@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using saonGroup.UI.Models;
+using System.Net.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace saonGroup.UI.Controllers
 {
@@ -11,16 +13,11 @@ namespace saonGroup.UI.Controllers
     {
         public IActionResult Index()
         {
-            return View(this.initialData());
-        }
-
-        private List<RegionModel> initialData() {
-            List<RegionModel> result = new List<RegionModel>();
-            result.Add( new RegionModel { iso="USA", confirmed=100, deaths=50, name="United States", recovered=1});
-            result.Add(new RegionModel { iso = "CHN", confirmed = 100, deaths = 50, name = "CHINA", recovered = 1 });
-            result.Add(new RegionModel { iso = "GTM", confirmed = 100, deaths = 50, name = "GUATEMALA", recovered = 1 });
-            result.Add(new RegionModel { iso = "ESL", confirmed = 100, deaths = 50, name = "El SALVADOR", recovered = 1 });
-            return result;
+            BusinessModel bs = new BusinessModel();
+            List<RegionModel> regions = bs.DataRegion();
+            var regionDrop = new SelectList(regions.Select( r => new { r.name,r.iso }));
+            
+            return View(regions);
         } 
     }
 }
