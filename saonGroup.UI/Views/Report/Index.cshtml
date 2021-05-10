@@ -1,0 +1,39 @@
+﻿@model IEnumerable<saonGroup.UI.Models.RegionModel>
+
+@{
+    ViewData["Title"] = "Top 10 Covid Cases";
+}
+
+<h5>Top 10 covid cases</h5>
+
+ 
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.name)
+            </th> 
+            <th>
+                @Html.DisplayNameFor(model => model.confirmed)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.recovered)
+            </th> 
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.name)
+            </td> 
+            <td>
+                @Html.DisplayFor(modelItem => item.confirmed)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.recovered)
+            </td> 
+        </tr>
+}
+    </tbody>
+</table>
