@@ -6,13 +6,13 @@
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.province)
-            </th> 
+            </th>
             <th>
                 @Html.DisplayNameFor(model => model.confirmed)
-            </th> 
+            </th>
             <th>
                 @Html.DisplayNameFor(model => model.deaths)
-            </th> 
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -22,16 +22,18 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.province)
                 </td>
-                
+
                 <td>
                     @Html.DisplayFor(modelItem => item.confirmed)
                 </td>
-                 
+
                 <td>
                     @Html.DisplayFor(modelItem => item.deaths)
                 </td>
-                 
+
             </tr>
         }
     </tbody>
 </table>
+
+ 

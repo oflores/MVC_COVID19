@@ -78,17 +78,25 @@
 </div>
 
 @section scripts{
+    <script src="~/js/jquery.tabletojson.min.js"></script>
     <script type="text/javascript">
         var currentISO = "";
-        var urlBase = '@Url.Action("Province", "Report")?ISO=' ;
+        var urlBase = '@Url.Action("Province", "Report")?ISO=';
+   
         $(document).ready(function () {
             $("#btnReport").click(function () {
                 currentISO = $("#btnIso").val();
                 loadDataTable();
             });
             $("#btnXML").click(function () {
-                alert('printXML');
                 printXml();
+            });
+            $("#btnJson").click(function () { 
+                printJson();
+            });
+            $("#btnCsv").click(function () {
+                alert('json');
+                printCsv();
             });
         });
         function loadDataTable() {
@@ -105,29 +113,27 @@
             }
         }
         function printXml() {
-            console.log('aqui');
             if (currentISO == "") {
-                regionsXML();
+                regionsXml();
             } else {
                 provinceXmL();
             }
-
         }
-        function regionsXML() {
+        function regionsXml() {
             var xml = '<?xml version="1.0" encoding="UTF-8"?>';
             xml = '<Regions>';
-            var tritem = document.getElementById("tableRegion").getElementsByTagName("tr"); 
+            var tritem = document.getElementById("tableRegion").getElementsByTagName("tr");
             xml += xmlBody("REGION", tritem);
             xml += '</Regions>';
-            downloadXML("regions.xml", xml, "xml");
+            downloadFile("regions.xml", xml, "xml");
         }
         function provinceXmL() {
             var xml = '<?xml version="1.0" encoding="UTF-8"?>';
             xml = '<provinces ISO="' + currentISO +'">';
-            var tritem = document.getElementById("tableProvince").getElementsByTagName("tr"); 
+            var tritem = document.getElementById("tableProvince").getElementsByTagName("tr");
             xml += xmlBody("PROVINCE", tritem);
             xml += '</provinces>';
-            downloadXML("provinces.xml", xml,"xml");
+            downloadFile("provinces_" + currentISO +".xml", xml,"xml");
         }
         function xmlBody(elementTag, currentTable) {
             var xml = "";
@@ -142,14 +148,46 @@
             }
             return xml;
         }
-        function downloadXML(filename, text,type) {
+        function downloadFile(filename, text,type) {
             var element = document.createElement('a');
             element.setAttribute('href', 'data:text/'+type+';charset=utf-8,' + encodeURIComponent(text));
-            element.setAttribute('download', filename); 
+            element.setAttribute('download', filename);
             element.style.display = 'none';
-            document.body.appendChild(element); 
-            element.click(); 
+            document.body.appendChild(element);
+            element.click();
             document.body.removeChild(element);
+        }
+        function printJson() {
+            if (currentISO == "") {
+                var newRegionJsonTable = $('#tableRegion').tableToJSON();
+                downloadFile("region.json", JSON.stringify({ regions: newRegionJsonTable }), "json")
+            } else {
+                var newProvinceJsonTable = $('#tableProvince').tableToJSON();
+                downloadFile("provinces_" + currentISO +".json", JSON.stringify({ provinces: newProvinceJsonTable }), "json")
+            }  
+        }
+        function printCsv() {
+            if (currentISO == "") {
+                var newRegionCsv = DownloadJSON2CSV($('#tableRegion').tableToJSON());
+                downloadFile("region.csv", newRegionCsv, "csv")
+            } else {
+                var newProvinceCsv = DownloadJSON2CSV($('#tableProvince').tableToJSON());
+                downloadFile("provinces_" + currentISO+".csv", newProvinceCsv, "csv")
+            }
+        }
+
+        function DownloadJSON2CSV(objArray) {
+            var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray; 
+            var str = ''; 
+            for (var i = 0; i < array.length; i++) {
+                var line = ''; 
+                for (var index in array[i]) {
+                    line += array[i][index] + ',';
+                } 
+                line.slice(0, line.Length - 1); 
+                str += line + '\r\n';
+            }
+            return str;
         }
     </script>
 

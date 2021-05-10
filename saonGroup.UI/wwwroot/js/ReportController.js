@@ -1,8 +1,7 @@
 ﻿
 $(document).ready(function () {
     var urlBase =  '@Url.Action("Province", "Report")?ISO=' ;
-    console.log(urlBase);
-    console.log(urlBase2);
+    console.log(urlBase); 
     $("#btnReport").click(function () {
         let strISO = $("#btnIso").val();
        
